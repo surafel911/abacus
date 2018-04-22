@@ -1,11 +1,6 @@
-section = .boot
+.section .boot
 
 .global _start
-
-_init:
-		ldr		x0, =_start
-		mov		sp, x0
-		b		.
 
 _start:
 		mrs		x0, mpidr_el1
@@ -13,3 +8,9 @@ _start:
 		cbz		x0, _init
 .loop:	wfe
 		b		.loop
+		
+_init:
+		ldr		x0, =_start
+		mov		sp, x0
+		b		kern_entry
+

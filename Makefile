@@ -1,3 +1,10 @@
+# User configuration 
+
+SDCARD = sdd
+
+
+
+# Do not edit
 CC = aarch64-elf
 
 CFLAGS = \
@@ -5,10 +12,13 @@ CFLAGS = \
 		-Wall \
 		-Werror \
 		-std=gnu99 \
-		-ffreestanding \
-		-nostdinc \
 		-nostdlib \
 		-nostartfiles \
+		-ffreestanding \
+
+LDFLAGS = \
+		-nostdlib \
+		-nostartfiles
 
 BINARY = kernel8
 
@@ -29,18 +39,18 @@ $(info $(OBJECTS))
 
 all: build clean
 
-%.o: %.S
-	$(CC)-gcc $(CFLAGS) $(INCLUDE) $^ -o $@
-
 %.o: %.c
-	$(CC)-gcc $(CFLAGS) $(INCLUDE) $^ -o $@
+	$(CC)-gcc $(CFLAGS) $(INCLUDE) -c $^ -o $@
+
+%.o: %.S
+	$(CC)-gcc $(CFLAGS) $(INCLUDE) -c $^ -o $@
 
 $(IMAGE): $(OBJECTS)
-	$(CC)-ld $(OBJECTS) -T $(LDSCRIPT) -o $(LOADER_ELF)
+	$(CC)-ld $(LDFLAGS) $(OBJECTS) -T $(LDSCRIPT) -o $(LOADER_ELF)
 	$(CC)-objcopy $(LOADER_ELF) -O binary $(IMAGE)
 
 build: $(IMAGE)
-
+	
 
 
 clean:
