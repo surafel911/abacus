@@ -51,7 +51,8 @@ $(IMAGE): $(OBJECTS)
 
 build: $(IMAGE)
 	
-
+config:
+	@printf "boot_delay=1\nforce_turbo=1\nenable_uart=1" >> bin/config.txt
 
 clean:
 	rm -rf $(OBJECTS) $(LOADER_ELF)
