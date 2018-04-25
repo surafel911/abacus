@@ -51,5 +51,13 @@ build: $(IMAGE)
 config:
 	@printf "boot_delay=1\nforce_turbo=1\nenable_uart=1" >> bin/config.txt
 
+install:
+	sudo mount /dev/$(SDCARD)1 /mnt
+	sudo cp bin/* /mnt
+	sleep 2.5
+	sudo umount /mnt
+
+package: build clean install
+
 clean:
 	rm -rf $(OBJECTS) $(LOADER_ELF)
