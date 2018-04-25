@@ -1,0 +1,5 @@
+boot_delay=1
+force_turbo=1
+enable_uart=1boot_delay=1
+force_turbo=1
+enable_uart=1

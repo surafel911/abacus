@@ -2,8 +2,6 @@
 
 SDCARD = sdd
 
-
-
 # Do not edit
 CC = aarch64-elf
 
@@ -35,8 +33,6 @@ SOURCES += $(shell find -name "*.S")
 
 OBJECTS = $(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SOURCES)))
 
-$(info $(OBJECTS))
-
 all: build clean
 
 %.o: %.c
@@ -46,6 +42,7 @@ all: build clean
 	$(CC)-gcc $(CFLAGS) $(INCLUDE) -c $^ -o $@
 
 $(IMAGE): $(OBJECTS)
+	$(info $(OBJECTS))
 	$(CC)-ld $(LDFLAGS) $(OBJECTS) -T $(LDSCRIPT) -o $(LOADER_ELF)
 	$(CC)-objcopy $(LOADER_ELF) -O binary $(IMAGE)
 

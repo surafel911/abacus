@@ -7,11 +7,15 @@ SECTIONS
 		*(.text*)
 	}
 
-	.data : {
+	.rodata ALIGN(16) : {
+		*(.rodata*)
+	}
+
+	.data ALIGN(16) : {
 		*(.data*)
 	}
 
-	.bss : {
+	.bss (NOLOAD) : {
 		. = ALIGN(16);
 		__bss_start = .;
 		*(.bss*)
