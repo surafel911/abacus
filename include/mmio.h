@@ -1,0 +1,6 @@
+#ifndef ABACUS_MMIO_H
+#define ABACUS_MMIO_H
+
+#define MMIO_BASE	0x3F000000
+
+#endif // ABACUS_MMIO_H

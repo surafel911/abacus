@@ -1,15 +1,16 @@
 #include <muart.h>
 #include <muart_i.h>
 
+#include <stddef.h>
 #include <stdint.h>
 
-enum {
-	MUART_BASE =			0x3F215040,
-	MUART_FIFO_CLEAR =		0x6,
-	MUART_DSIZE_8BIT =		0x3,
-	MUART_HAS_DATA =		0x1,
-	MUART_CAN_SEND =		(1 << 5),
-};
+#include <mmio.h>
+
+#define MUART_BASE			(MMIO_BASE + 0x215040)
+#define MUART_DSIZE_8BIT	0x3
+#define MUART_FIFO_CLEAR	0x6
+#define MUART_HAS_DATA		0x1
+#define MUART_CAN_SEND		(1 << 5)
 
 struct muart_map {
 	uint32_t io;

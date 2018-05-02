@@ -12,5 +12,4 @@ _start:
 _init:
 		ldr		x0, =_start
 		mov		sp, x0
-		b		kern_entry
-
+		b		kern_main
