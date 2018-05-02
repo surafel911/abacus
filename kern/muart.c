@@ -7,7 +7,6 @@
 #include <mmio.h>
 
 #define MUART_BASE			(MMIO_BASE + 0x215040)
-#define MUART_DSIZE_8BIT	0x3
 #define MUART_FIFO_CLEAR	0x6
 #define MUART_HAS_DATA		0x1
 #define MUART_CAN_SEND		(1 << 5)
@@ -32,7 +31,6 @@ void
 muart_setup(void)
 {
 	_muart->iir |= MUART_FIFO_CLEAR;
-	_muart->lcr |= MUART_DSIZE_8BIT;
 }
 
 uint8_t
@@ -48,5 +46,5 @@ muart_send(uint8_t byte)
 {	
 	while (!(_muart->lsr & MUART_CAN_SEND));
 
-	_muart->io |= byte;
+	_muart->io = byte;
 }
