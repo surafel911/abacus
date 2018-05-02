@@ -14,6 +14,10 @@ CFLAGS = \
 		-nostartfiles \
 		-ffreestanding \
 
+LIBRARY = -lgcc
+
+LIBRARY_DIR = -L/usr/aarch64-elf/libc/usr/lib/
+
 LDFLAGS = \
 		-nostdlib \
 		-nostartfiles
@@ -36,10 +40,10 @@ OBJECTS = $(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SOURCES)))
 all: build clean
 
 %.o: %.c
-	$(CC)-gcc $(CFLAGS) $(INCLUDE) -c $^ -o $@
+	$(CC)-gcc $(CFLAGS) $(INCLUDE) $(LIBRARY_DIR) $(LIBRARIES) -c $^ -o $@
 
 %.o: %.S
-	$(CC)-gcc $(CFLAGS) $(INCLUDE) -c $^ -o $@
+	$(CC)-gcc $(CFLAGS) $(INCLUDE) $(LIBRARY_DIR) $(LIBRARIES) -c $^ -o $@
 
 $(IMAGE): $(OBJECTS)
 	$(info $(OBJECTS))
@@ -57,7 +61,7 @@ install:
 	sleep 2.5
 	sudo umount /mnt
 
-package: build clean install
+package: build clean config install
 
 clean:
 	rm -rf $(OBJECTS) $(LOADER_ELF)
