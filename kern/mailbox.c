@@ -8,9 +8,10 @@
 
 #define MAILBOX_BASE			(MMIO_BASE + 0xB880)
 #define MAILBOX_COUNT			2
-#define MAILBOX_FULL			0x80000000
-#define MAILBOX_EMPTY			0x40000000
-#define MAILBOX_LEVEL			0x400000FF
+#define MAILBOX_STATUS_OK		0
+#define MAILBOX_STATUS_FULL		0x80000000
+#define MAILBOX_STATUS_EMPTY	0x40000000
+#define MAILBOX_STATUS_LEVEL	0x400000FF
 #define MAILBOX_CHANNEL			0xF
 #define MAILBOX_CHANNEL_BITS	4
 
@@ -58,7 +59,7 @@ mailbox_pop(enum mailbox_channel channel)
 	mailbox = mailbox_lookup(MAILBOX_READ);
 
 	while (true) {
-		while (!(mailbox->status & MAILBOX_EMPTY));
+		while ((mailbox->status & MAILBOX_STATUS_EMPTY) != MAILBOX_STATUS_OK);
 
 		data = mailbox->data;
 		if ((data & MAILBOX_CHANNEL_BITS) == (uint32_t)channel) {
@@ -77,7 +78,7 @@ mailbox_push(enum mailbox_channel channel, uint32_t value)
 
 	mailbox = mailbox_lookup(MAILBOX_WRITE);
 
-	while (!(mailbox->status & MAILBOX_FULL));
+	while ((mailbox->status & MAILBOX_STATUS_FULL) != MAILBOX_STATUS_OK);
 
 	data = (value << MAILBOX_CHANNEL_BITS);
 	data &= (uint8_t)channel;
