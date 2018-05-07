@@ -9,6 +9,6 @@ kern_main(void)
 	muart_setup();
 
 	while (true) {
-		muart_send('A');
+		muart_send(sizeof(int));
 	}
 }

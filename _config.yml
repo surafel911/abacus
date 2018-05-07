@@ -1,1 +1,6 @@
 theme: jekyll-theme-minimal
+
+title: [Abacus Microkernel]
+description: [Documentation for the Abacus microkernel developed by Surafel Assefa.]
+
+show_downloads: ["true"]
