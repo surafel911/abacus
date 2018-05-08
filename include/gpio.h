@@ -81,16 +81,19 @@ enum gpio_pin {
 void
 gpio_pud_mode(enum gpio_pud pud);
 
-inline void
-gpio_pudclk_hold(void)
-{
-	for (int index = 0; index < 150; index ++);
-}
+void
+gpio_pudclk_hold(void);
+
+void
+gpio_pudclk_reset(void);
 
 void
 gpio_pudclk_signal(enum gpio_pin pin);
 
 void
-gpio_pin_setup(enum gpio_pin pin, enum gpio_function function);
+gpio_pin_fsel(enum gpio_pin pin, enum gpio_function function);
+
+void
+gpio_pin_output(enum gpio_pin pin, bool value);
 
 #endif // ABACUS_GPIO_H
