@@ -29,12 +29,12 @@ struct mailbox {
 	uint32_t config;
 };
 
-static struct mailbox* _mailboxes[MAILBOX_COUNT] = {
+static volatile struct mailbox* _mailboxes[MAILBOX_COUNT] = {
 		(struct mailbox*)MAILBOX_BASE,
 		(struct mailbox*)(MAILBOX_BASE + 0x20)
 	};
 
-static struct mailbox*
+static volatile struct mailbox*
 mailbox_lookup(enum mailbox_id id)
 {
 	return _mailboxes[(uint8_t)id];
@@ -52,7 +52,7 @@ uint32_t
 mailbox_pop(enum mailbox_channel channel)
 {
 	uint32_t data;
-	struct mailbox* mailbox;
+	volatile struct mailbox* mailbox;
 
 	mailbox_check_channel(channel);
 
@@ -72,7 +72,7 @@ void
 mailbox_push(enum mailbox_channel channel, uint32_t value)
 {
 	uint32_t data;
-	struct mailbox* mailbox;
+	volatile struct mailbox* mailbox;
 
 	mailbox_check_channel(channel);
 

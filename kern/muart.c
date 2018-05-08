@@ -25,7 +25,7 @@ struct muart_map {
 	uint32_t baud;
 };
 
-static struct muart_map* _muart = (struct muart_map*)MUART_BASE;
+static volatile struct muart_map* _muart = (struct muart_map*)MUART_BASE;
 
 void
 muart_setup(void)
@@ -36,7 +36,7 @@ muart_setup(void)
 uint8_t
 muart_read(void)
 {
-	while (!(_muart->lsr & MUART_HAS_DATA));
+	while (_muart->lsr & MUART_HAS_DATA);
 
 	return _muart->io;
 }
@@ -44,7 +44,11 @@ muart_read(void)
 void
 muart_send(uint8_t byte)
 {	
-	while (!(_muart->lsr & MUART_CAN_SEND));
+	if (byte == '\n') {
+		muart_send('\r');
+	}
+
+	while (_muart->lsr & MUART_CAN_SEND);
 
 	_muart->io = byte;
 }
