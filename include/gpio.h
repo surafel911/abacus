@@ -11,14 +11,14 @@ enum gpio_pud {
 };
 
 enum gpio_function {
-	GPIO_FUNC_INP = 0,
-	GPIO_FUNC_OUT = 1,
-	GPIO_FUNC_ALT0 = 4,
-	GPIO_FUNC_ALT1 = 5,
-	GPIO_FUNC_ALT2 = 6,
-	GPIO_FUNC_ALT3 = 7,
-	GPIO_FUNC_ALT4 = 3,
-	GPIO_FUNC_ALT5 = 2,
+	GPIO_FSEL_INP = 0,
+	GPIO_FSEL_OUT = 1,
+	GPIO_FSEL_ALT0 = 4,
+	GPIO_FSEL_ALT1 = 5,
+	GPIO_FSEL_ALT2 = 6,
+	GPIO_FSEL_ALT3 = 7,
+	GPIO_FSEL_ALT4 = 3,
+	GPIO_FSEL_ALT5 = 2,
 };
 
 enum gpio_pin {
@@ -91,7 +91,7 @@ void
 gpio_pudclk_signal(enum gpio_pin pin);
 
 void
-gpio_pin_fsel(enum gpio_pin pin, enum gpio_function function);
+gpio_pin_function(enum gpio_pin pin, enum gpio_function function);
 
 void
 gpio_pin_output(enum gpio_pin pin, bool value);

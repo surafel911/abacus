@@ -37,10 +37,20 @@ struct gpio_map {
 static volatile struct gpio_map* _gpio = (struct gpio_map*)GPIO_BASE;
 
 static void
-write_mask(volatile uint32_t* reg, uint32_t clear, uint32_t value)
+gpio_write_mask(volatile uint32_t* reg, uint32_t clear, uint32_t value)
 {
 	(*reg) &= ~(clear);
 	(*reg) |= value;
+}
+
+static void
+gpio_set_pin_bit(volatile uint32_t* registers, enum gpio_pin pin, bool value)
+{
+	if (pin < 31) {
+		gpio_write_mask(registers, 1 << (int)pin, 1 << (int)pin);
+	} else {
+		gpio_write_mask(registers + 1, 1 << ((int)pin - 32), 1 << ((int)pin - 32));
+	}
 }
 
 void
@@ -65,37 +75,20 @@ gpio_pudclk_reset(void)
 void
 gpio_pudclk_signal(enum gpio_pin pin)
 {
-	uint32_t mask;
-
-	if (pin > 31) {
-		mask = 1 << ((unsigned int)pin - 32);
-		write_mask(&_gpio->pudclk[1], mask, mask);
-	} else {
-		mask = 1 << (unsigned int)pin;
-		write_mask(&_gpio->pudclk[0], mask, mask);
-	}
+	gpio_set_pin_bit(&_gpio->pudclk[0], pin, true);
 }
 
 void
-gpio_pin_fsel(enum gpio_pin pin, enum gpio_function function)
+gpio_pin_function(enum gpio_pin pin, enum gpio_function function)
 {
-	uint32_t group = (unsigned int)pin / 10;
-	uint32_t mask = (unsigned int)function << (((unsigned int)pin % 10) * 3);
-	uint32_t clear_mask = 7 << (((unsigned int)pin % 10) * 3);
+	int group = (int)pin / 10;
+	int offset = ((int)pin % 10) * 3;
 
-	write_mask(&_gpio->fsel[group], clear_mask, mask);
+	gpio_write_mask(&_gpio->fsel[group], 0b111 << offset, (int)function << offset);
 }
 
 void
 gpio_pin_output(enum gpio_pin pin, bool value)
 {
-	uint32_t mask;
-
-	if (pin > 31) {
-		mask = 1 << ((unsigned int)pin - 32);
-		write_mask(&_gpio->set[1], mask, mask);
-	} else {
-		mask = 1 << (unsigned int)pin;
-		write_mask(&_gpio->set[0], mask, mask);
-	}
+	gpio_set_pin_bit(&_gpio->set[0], pin, value);
 }
