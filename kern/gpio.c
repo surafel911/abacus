@@ -3,7 +3,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <bits.h>
 #include <mmio.h>
+#include <macros.h>
 
 #define GPIO_BASE	(MMIO_BASE + 0x200000)
 
@@ -32,24 +34,17 @@ struct gpio_map {
 	uint32_t reserved11;
 	uint32_t pud;
 	uint32_t pudclk[2];
-};
+} __packed __aligned(32);
 
 static volatile struct gpio_map* _gpio = (struct gpio_map*)GPIO_BASE;
-
-static void
-gpio_write_mask(volatile uint32_t* reg, uint32_t clear, uint32_t value)
-{
-	(*reg) &= ~(clear);
-	(*reg) |= value;
-}
 
 static void
 gpio_set_pin_bit(volatile uint32_t* registers, enum gpio_pin pin, bool value)
 {
 	if (pin < 31) {
-		gpio_write_mask(registers, 1 << (int)pin, 1 << (int)pin);
+		bits_write(registers, 1 << (int)pin, 1 << (int)pin);
 	} else {
-		gpio_write_mask(registers + 1, 1 << ((int)pin - 32), 1 << ((int)pin - 32));
+		bits_write(registers + 1, 1 << ((int)pin - 32), 1 << ((int)pin - 32));
 	}
 }
 
@@ -84,7 +79,7 @@ gpio_pin_function(enum gpio_pin pin, enum gpio_function function)
 	int group = (int)pin / 10;
 	int offset = ((int)pin % 10) * 3;
 
-	gpio_write_mask(&_gpio->fsel[group], 0b111 << offset, (int)function << offset);
+	bits_write(&_gpio->fsel[group], 0b111 << offset, (int)function << offset);
 }
 
 void
