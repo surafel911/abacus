@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <mmio.h>
+#include <macros.h>
 
 #define MUART_BASE			(MMIO_BASE + 0x215040)
 #define MUART_ENABLE		0x3
@@ -26,7 +27,7 @@ struct muart_map {
 	uint32_t cntl;
 	uint32_t stat;
 	uint32_t baud;
-};
+} __packed __aligned(32);
 
 static volatile struct muart_map* _muart = (struct muart_map*)MUART_BASE;
 
