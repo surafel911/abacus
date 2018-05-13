@@ -6,7 +6,7 @@ SDCARD = sdd
 CC = aarch64-elf
 
 CFLAGS = \
-		-Og \
+		-O3 \
 		-Wall \
 		-Werror \
 		-std=gnu99 \
