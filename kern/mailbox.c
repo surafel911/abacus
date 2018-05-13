@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <bits.h>
 #include <mmio.h>
 #include <panic.h>
 
@@ -20,7 +21,7 @@ enum mailbox_id {
 	MAILBOX_WRITE,
 };
 
-struct mailbox {
+struct mailbox_map {
 	uint32_t data;
 	uint32_t unused[3];
 	uint32_t peek;
@@ -29,21 +30,21 @@ struct mailbox {
 	uint32_t config;
 };
 
-static volatile struct mailbox* _mailboxes[MAILBOX_COUNT] = {
-		(struct mailbox*)MAILBOX_BASE,
-		(struct mailbox*)(MAILBOX_BASE + 0x20)
+static volatile struct mailbox_map* _mailboxes[MAILBOX_COUNT] = {
+		(struct mailbox_map*)MAILBOX_BASE,
+		(struct mailbox_map*)(MAILBOX_BASE + 0x20)
 	};
 
-static volatile struct mailbox*
+static volatile struct mailbox_map*
 mailbox_lookup(enum mailbox_id id)
 {
-	return _mailboxes[(uint8_t)id];
+	return _mailboxes[(int)id];
 }
 
-static void
+static inline void
 mailbox_check_channel(enum mailbox_channel channel)
 {
-	if (channel == MAILBOX_UNUSED) {
+	if (channel == MAILBOX_CHANNEL_UNUSED) {
 		panic();
 	}
 }
@@ -52,7 +53,7 @@ uint32_t
 mailbox_pop(enum mailbox_channel channel)
 {
 	uint32_t data;
-	volatile struct mailbox* mailbox;
+	volatile struct mailbox_map* mailbox;
 
 	mailbox_check_channel(channel);
 
@@ -62,17 +63,18 @@ mailbox_pop(enum mailbox_channel channel)
 		while ((mailbox->status & MAILBOX_STATUS_EMPTY) != MAILBOX_STATUS_OK);
 
 		data = mailbox->data;
-		if ((data & MAILBOX_CHANNEL_BITS) == (uint32_t)channel) {
-			return (data >> MAILBOX_CHANNEL_BITS);
+		if ((data & MAILBOX_CHANNEL_BITS) == (int)channel) {
+			bits_clear((volatile uint32_t*)&data, MAILBOX_CHANNEL_BITS);
+			return data;
 		}
 	}
 }
 
 void
-mailbox_push(enum mailbox_channel channel, uint32_t value)
+mailbox_push(enum mailbox_channel channel, intptr_t address)
 {
 	uint32_t data;
-	volatile struct mailbox* mailbox;
+	volatile struct mailbox_map* mailbox;
 
 	mailbox_check_channel(channel);
 
@@ -80,8 +82,7 @@ mailbox_push(enum mailbox_channel channel, uint32_t value)
 
 	while ((mailbox->status & MAILBOX_STATUS_FULL) != MAILBOX_STATUS_OK);
 
-	data = (value << MAILBOX_CHANNEL_BITS);
-	data &= (uint8_t)channel;
+	data = ((uint32_t)address | channel);
 
 	mailbox->data = data;
 }
