@@ -2,24 +2,23 @@ SECTIONS
 {
 	. = 0x8000;
 
-	.text : {
+	.text ALIGN(4K) : {
 		KEEP(*(.boot));
 		*(.text*)
 	}
 
-	.rodata ALIGN(16) : {
+	.rodata ALIGN(4K) : {
 		*(.rodata*)
 	}
 
-	.data ALIGN(16) : {
+	.data ALIGN(4K) : {
 		*(.data*)
 	}
 
-	.bss (NOLOAD) : {
-		. = ALIGN(16);
+	.bss ALIGN(4K) (NOLOAD) : {
 		__bss_start = .;
 		*(.bss*)
 		. = ALIGN(16);
-		__bss_nlwords = (. - __bss_start);
+		__bss_end = .;
 	}
 }

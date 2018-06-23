@@ -3,6 +3,7 @@
 SDCARD = sdd
 
 # Do not edit
+
 CC = aarch64-elf
 
 CFLAGS = \
@@ -53,6 +54,7 @@ $(IMAGE): $(OBJECTS)
 build: $(IMAGE)
 	
 config:
+	rm bin/config.txt
 	@printf "boot_delay=1\nforce_turbo=1\nenable_uart=1" >> bin/config.txt
 
 install:

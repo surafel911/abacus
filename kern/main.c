@@ -11,8 +11,9 @@ void
 kern_main(void)
 {
 	muart_setup();
-	
+
+	muart_send(cc + 48);
+
 	while (true) {
-		muart_send(cc ? 'F' : 'T');
 	}
 }
