@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <bits.h>
+#include <util.h>
 #include <mmio.h>
 #include <panic.h>
 
@@ -64,7 +64,7 @@ mailbox_pop(enum mailbox_channel channel)
 
 		data = mailbox->data;
 		if ((data & MAILBOX_CHANNEL_BITS) == (int)channel) {
-			bits_clear((volatile uint32_t*)&data, MAILBOX_CHANNEL_BITS);
+//			bits_clear((volatile uint32_t*)&data, MAILBOX_CHANNEL_BITS);
 			return data;
 		}
 	}

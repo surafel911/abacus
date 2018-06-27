@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <bits.h>
+#include <util.h>
 #include <mmio.h>
 #include <macros.h>
 
@@ -42,9 +42,7 @@ static void
 gpio_set_pin_bit(volatile uint32_t* registers, enum gpio_pin pin, bool value)
 {
 	if (pin < 31) {
-		bits_write(registers, 1 << (int)pin, 1 << (int)pin);
 	} else {
-		bits_write(registers + 1, 1 << ((int)pin - 32), 1 << ((int)pin - 32));
 	}
 }
 
@@ -76,10 +74,8 @@ gpio_pudclk_signal(enum gpio_pin pin)
 void
 gpio_pin_function(enum gpio_pin pin, enum gpio_function function)
 {
-	int group = (int)pin / 10;
-	int offset = ((int)pin % 10) * 3;
-
-	bits_write(&_gpio->fsel[group], 0b111 << offset, (int)function << offset);
+//	int group = (int)pin / 10;
+//	int offset = ((int)pin % 10) * 3;
 }
 
 void
