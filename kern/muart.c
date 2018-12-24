@@ -7,13 +7,13 @@
 #include <mmio.h>
 #include <macros.h>
 
-#define MUART_BASE			(MMIO_BASE + 0x215040)
+#define MUART_BASE		(MMIO_BASE + 0x215040)
 #define MUART_ENABLE		0x3
 #define MUART_MODE_8BIT		0x3
 #define MUART_FIFO_FULL		0x0
 #define MUART_FIFO_CLEAR	0x6
-#define MUART_HAS_DATA		0x1
-#define MUART_CAN_SEND		(1 << 5)
+#define MUART_FIFO_SEND_READY	0x1
+#define MUART_FIFO_READ_READY	(1 << 5)
 
 struct muart_map {
 	uint32_t io;
@@ -34,16 +34,16 @@ static volatile struct muart_map* _muart = (struct muart_map*)MUART_BASE;
 void
 muart_setup(void)
 {
-	_muart->iir |= MUART_FIFO_CLEAR;
-	_muart->lcr |= MUART_MODE_8BIT;
-
-	_muart->cntl |= MUART_ENABLE;
+	_muart->iir = MUART_FIFO_CLEAR;
+	_muart->lcr = MUART_MODE_8BIT;
+	
+	_muart->cntl = MUART_ENABLE;
 }
 
 uint8_t
 muart_read(void)
 {
-	while ((_muart->lsr & MUART_HAS_DATA) == MUART_FIFO_FULL);
+	while ((_muart->lsr & MUART_FIFO_SEND_READY) == MUART_FIFO_FULL);
 
 	return _muart->io;
 }
@@ -55,7 +55,7 @@ muart_send(uint8_t byte)
 		muart_send('\r');
 	}
 
-	while ((_muart->lsr & MUART_CAN_SEND) == MUART_FIFO_FULL);
+	while ((_muart->lsr & MUART_FIFO_READ_READY) == MUART_FIFO_FULL);
 
 	_muart->io = byte;
 }

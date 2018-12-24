@@ -1,22 +1,29 @@
-#include <cpu.h>
-#include <muart.h>
-
 #include <stdint.h>
+
+#include <cpu.h>
+#include <cpu_i.h>
+#include <util.h>
 
 void
 cpu_fiq_handler(void)
 {
-	muart_send('F');
+	puts("FIQ");
 }
 
 void
 cpu_irq_handler(void)
 {
-	muart_send('I');
+	puts("IRQ");
 }
 
 void
 cpu_synchronous_handler(const uint32_t esr)
 {
-	muart_send('E');
+	puts("SVC");
+}
+
+void
+cpu_setup(void)
+{
+	cpu_intr_enable();
 }

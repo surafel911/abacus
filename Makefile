@@ -7,21 +7,21 @@ SDCARD = sdd
 CC = aarch64-elf
 
 CFLAGS = \
-		-O3 \
-		-Wall \
-		-Werror \
-		-std=gnu99 \
-		-nostdlib \
-		-nostartfiles \
-		-ffreestanding \
+	-O3 \
+	-Wall \
+	-Werror \
+	-std=gnu99 \
+	-nostdlib \
+	-nostartfiles \
+	-ffreestanding \
 
 LIBRARY = -lgcc
 
 LIBRARY_DIR = -L/usr/aarch64-elf/libc/usr/lib/
 
 LDFLAGS = \
-		-nostdlib \
-		-nostartfiles
+	-nostdlib \
+	-nostartfiles
 
 BINARY = kernel8
 
@@ -36,14 +36,14 @@ INCLUDE = -Iinclude
 SOURCES += $(shell find -name "*.c")
 SOURCES += $(shell find -name "*.S")
 
-OBJECTS = $(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SOURCES)))
+OBJECTS = $(patsubst %.c,%.c.o,$(patsubst %.S,%.S.o,$(SOURCES)))
 
 all: build clean
 
-%.o: %.c
+%.c.o: %.c
 	$(CC)-gcc $(CFLAGS) $(INCLUDE) $(LIBRARY_DIR) $(LIBRARIES) -c $^ -o $@
 
-%.o: %.S
+%.S.o: %.S
 	$(CC)-gcc $(CFLAGS) $(INCLUDE) $(LIBRARY_DIR) $(LIBRARIES) -c $^ -o $@
 
 $(IMAGE): $(OBJECTS)

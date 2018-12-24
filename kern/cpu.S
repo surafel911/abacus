@@ -1,13 +1,35 @@
 .section .text
 
-#define FRAME_SIZE	240
+#define FRAME_SIZE	248
 
+exception_table:
+.balign 128
+.balign 128
+.balign 128
+.balign 128
+		bl		save_register_state
+		mrs		x0, esr_el1
+		bl		cpu_synchronous_handler
+		bl		load_register_state
+		eret
+.balign 128
+		bl		save_register_state
+		bl		enable_exceptions
+		bl		cpu_irq_handler
+		bl		load_register_state
+		eret
+.balign 128
+		bl		save_register_state
+		bl		enable_exceptions
+		bl		cpu_fiq_handler
+		bl		load_register_state
+		eret
 enable_exceptions:
-		esr		daifclr, #2
+		msr		daifclr, #2
 		ret
 
 save_register_state:
-		sub 	sp, sp, #FRAME_SIZE
+		sub	 	sp, sp, #FRAME_SIZE
 		stp		x0, x1, [sp] 
 		stp		x2, x3, [sp] 
 		stp		x4, x5, [sp] 
@@ -46,6 +68,12 @@ load_register_state:
 		add		sp, sp, #FRAME_SIZE
 		ret
 
+.global cpu_intr_enable
+cpu_intr_enable:
+		adr		x0, exception_table
+		msr		vbar_el1, x0
+		ret
+
 .global cpu_idle
 cpu_idle:
 		wfi
@@ -53,35 +81,4 @@ cpu_idle:
 
 .global cpu_halt
 cpu_halt:
-.halt:	wfe
-		b		.halt
-		ret
-
-.global exception_setup
-exception_setup:
-		adr		x0, exception_table
-		msr		vbar_el1, x0
-		ret
-
-exception_table:
-.balign 128
-.balign 128
-.balign 128
-.balign 128
-		b		save_register_state
-		mrs		x0, esr_el1
-		b		cpu_synchronous_handler
-		b		load_register_state
-		eret
-.balign 128
-		b		save_register_state
-		b		enable_exceptions
-		b		cpu_irq_handler
-		b		load_register_state
-		eret
-.balign 128
-		b		save_register_state
-		b		enable_exceptions
-		b		cpu_fiq_handler
-		b		load_register_state
-		eret
+		b		cpu_halt

@@ -1,19 +1,11 @@
 .section .boot
 
-.global _start
-_start:
-		mrs		x0, mpidr_el1
-		and		x0, x0, #3
-		cbz		x0, init
-.idle:	wfe
-		b		.idle
-
 bss_setup:
 		adr		x1, __bss_end
 		adr		x2, __bss_start
-.zero:	str		xzr, [x2], #8
+.zero:		stp		xzr, xzr, [x2], #16
 		cmp		x1, x2
-		b.ne	.zero
+		b.ne		.zero
 		ret
 
 stack_setup:
@@ -21,7 +13,19 @@ stack_setup:
 		mov		sp, x0
 		ret
 
-init:
-		b		stack_setup
-		b		bss_setup
-		b		kern_main
+// TODO: Enable muart before kern_main
+setup:
+		bl		stack_setup
+		bl		bss_setup
+		movk		x0, #0x1004
+		movk		x0, #0x352, lsl #16
+		str		x1, [x0]
+		bl		kern_main
+		b 		cpu_halt
+
+.global _start
+_start:
+		mrs		x0, mpidr_el1
+		and		x0, x0, #3
+		cbz		x0, setup
+		b		cpu_halt

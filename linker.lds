@@ -3,7 +3,7 @@ SECTIONS
 	. = 0x8000;
 
 	.text ALIGN(4K) : {
-		KEEP(*(.boot));
+		*(.boot)
 		*(.text*)
 	}
 

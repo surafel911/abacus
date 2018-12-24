@@ -1,19 +1,20 @@
+#include <util.h>
+#include <gpio.h>
 #include <muart.h>
 #include <muart_i.h>
-#include <mailbox.h>
 
-#include <stdbool.h>
-#include <stdint.h>
-
-char cc;
+static char cc;
 
 void
 kern_main(void)
 {
 	muart_setup();
 
-	muart_send(cc + 48);
+	muart_send(cc + 'A');
 
-	while (true) {
-	}
+#if 0	
+	asm volatile ("svc #10");
+
+	
+#endif
 }
