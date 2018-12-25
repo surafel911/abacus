@@ -1,20 +1,28 @@
+#include <stdbool.h>
+
 #include <util.h>
 #include <gpio.h>
-#include <muart.h>
 #include <muart_i.h>
 
 static char cc;
 
 void
+kern_setup(void)
+{
+}
+
+void
 kern_main(void)
 {
+	gpio_output_set_pin(GPIO_PIN_24, true);
+
+	gpio_fsel_set_pin(GPIO_14, GPIO_FSEL_ALT5);
+	gpio_fsel_set_pin(GPIO_15, GPIO_FSEL_ALT5);
+	gpio_pud_set_state(GPIO_PUD_OFF, GPIO_PIN_14 | GPIO_PIN_15);
+
 	muart_setup();
 
-	muart_send(cc + 'A');
+	putc(cc + 'A');
 
-#if 0	
 	asm volatile ("svc #10");
-
-	
-#endif
 }
