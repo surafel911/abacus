@@ -1,9 +1,3 @@
-# User configuration 
-
-SDCARD = sdd
-
-# Do not edit
-
 CC = aarch64-elf
 
 CFLAGS = \
@@ -14,10 +8,6 @@ CFLAGS = \
 	-nostdlib \
 	-nostartfiles \
 	-ffreestanding \
-
-LIBRARY = -lgcc
-
-LIBRARY_DIR = -L/usr/aarch64-elf/libc/usr/lib/
 
 LDFLAGS = \
 	-nostdlib \
@@ -41,10 +31,10 @@ OBJECTS = $(patsubst %.c,%.c.o,$(patsubst %.S,%.S.o,$(SOURCES)))
 all: build clean
 
 %.c.o: %.c
-	$(CC)-gcc $(CFLAGS) $(INCLUDE) $(LIBRARY_DIR) $(LIBRARIES) -c $^ -o $@
+	$(CC)-gcc $(CFLAGS) $(INCLUDE) -c $^ -o $@
 
 %.S.o: %.S
-	$(CC)-gcc $(CFLAGS) $(INCLUDE) $(LIBRARY_DIR) $(LIBRARIES) -c $^ -o $@
+	$(CC)-gcc $(CFLAGS) $(INCLUDE) -c $^ -o $@
 
 $(IMAGE): $(OBJECTS)
 	$(info $(OBJECTS))
@@ -55,15 +45,15 @@ build: $(IMAGE)
 	
 config:
 	rm bin/config.txt
-	@printf "boot_delay=1\nforce_turbo=1\nenable_uart=1" >> bin/config.txt
+	@printf "boot_delay=1\nenable_uart=1" > bin/config.txt
 
 install:
 	sudo mount /dev/$(SDCARD)1 /mnt
 	sudo cp bin/* /mnt
-	sleep 2.5
+	wait
 	sudo umount /mnt
 
-package: build clean config install
+package: build clean config
 
 clean:
 	rm -rf $(OBJECTS) $(LOADER_ELF)
