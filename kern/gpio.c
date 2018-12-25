@@ -36,50 +36,37 @@ struct gpio_map {
 	uint32_t pudclk[2];
 } __packed __aligned(32);
 
-static volatile struct gpio_map* _gpio = (struct gpio_map*)GPIO_BASE;
+static struct gpio_map* _gpio = (struct gpio_map*)GPIO_BASE;
 
-static void
-gpio_set_pin_bit(volatile uint32_t* registers, enum gpio_pin pin, bool value)
+void
+gpio_fsel_set_pin(const enum gpio gpio, const enum gpio_fsel fsel)
 {
-	if (pin < 31) {
+	_gpio->fsel[gpio / 10] |= fsel << (gpio % 10) * 3;
+}
+
+void
+gpio_output_set_pin(const enum gpio_pin pins, const bool to)
+{
+	if (to) {
+		_gpio->set[0] |= pins;
+		_gpio->set[1] |= pins >> 32;
 	} else {
+		_gpio->clr[0] |= pins;
+		_gpio->clr[1] |= pins >> 32;
 	}
 }
 
 void
-gpio_pud_mode(enum gpio_pud pud)
+gpio_pud_set_state(const enum gpio_pud pud, const enum gpio_pin pins)
 {
-	_gpio->pud = (uint8_t)pud;
-}
+	volatile int count;
 
-void
-gpio_pudclk_hold(void)
-{
-	for (volatile int index = 0; index < 150; index ++);
-}
-
-void
-gpio_pudclk_reset(void)
-{
+	_gpio->pud = (uint32_t)pud;
+	for (count = 0; count < 150; count++);
+	_gpio->pudclk[0] = pins;
+	_gpio->pudclk[1] = pins >> 32;
+	for (count = 0; count < 150; count++);
+	_gpio->pud = 0;
 	_gpio->pudclk[0] = 0;
 	_gpio->pudclk[1] = 0;
-}
-
-void
-gpio_pudclk_signal(enum gpio_pin pin)
-{
-	gpio_set_pin_bit(&_gpio->pudclk[0], pin, true);
-}
-
-void
-gpio_pin_function(enum gpio_pin pin, enum gpio_function function)
-{
-//	int group = (int)pin / 10;
-//	int offset = ((int)pin % 10) * 3;
-}
-
-void
-gpio_pin_output(enum gpio_pin pin, bool value)
-{
-	gpio_set_pin_bit(&_gpio->set[0], pin, value);
 }
