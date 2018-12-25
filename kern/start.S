@@ -13,13 +13,16 @@ stack_setup:
 		mov		sp, x0
 		ret
 
-// TODO: Enable muart before kern_main
-setup:
+aux_setup:
+		movk	x0, #0x5004
+		movk	x0, #0x3f21, lsl #16
+		str		x1, [x0]
+		ret
+
+bootstrap:
 		bl		stack_setup
 		bl		bss_setup
-		movk		x0, #0x1004
-		movk		x0, #0x352, lsl #16
-		str		x1, [x0]
+		bl		aux_setup
 		bl		kern_main
 		b 		cpu_halt
 
@@ -27,5 +30,5 @@ setup:
 _start:
 		mrs		x0, mpidr_el1
 		and		x0, x0, #3
-		cbz		x0, setup
+		cbz		x0, bootstrap
 		b		cpu_halt
