@@ -1,5 +1,12 @@
 .section .boot
 
+.global _start
+_start:
+		mrs		x0, mpidr_el1
+		and		x0, x0, #3
+		cbz		x0, bootstrap
+		b		cpu_halt
+
 bss_setup:
 		adr		x1, __bss_end
 		adr		x2, __bss_start
@@ -25,10 +32,3 @@ bootstrap:
 		bl		aux_setup
 		bl		kern_main
 		b 		cpu_halt
-
-.global _start
-_start:
-		mrs		x0, mpidr_el1
-		and		x0, x0, #3
-		cbz		x0, bootstrap
-		b		cpu_halt
