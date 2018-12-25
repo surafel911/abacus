@@ -19,4 +19,15 @@ cpu_idle(void);
 void
 cpu_setup(void);
 
+/*
+ *
+ */
+int
+cpu_get_id(void);
+
+/*
+ *
+ */
+int
+cpu_get_el(void);
 #endif // ABACUS_CPU_H

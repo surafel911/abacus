@@ -82,3 +82,13 @@ cpu_idle:
 .global cpu_halt
 cpu_halt:
 		b		cpu_halt
+
+.global cpu_get_id
+cpu_get_id:
+		mrs		x0, mpidr_el1
+		ret
+
+.global cpu_get_el
+cpu_get_el:
+		mrs		x0, currentel
+		ret
