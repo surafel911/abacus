@@ -10,7 +10,7 @@ _start:
 bss_setup:
 		adr		x1, __bss_end
 		adr		x2, __bss_start
-.zero:		stp		xzr, xzr, [x2], #16
+.zero:	stp		xzr, xzr, [x2], #16
 		cmp		x1, x2
 		b.ne		.zero
 		ret
@@ -23,6 +23,7 @@ stack_setup:
 aux_setup:
 		movk	x0, #0x5004
 		movk	x0, #0x3f21, lsl #16
+		mov		x1, #1
 		str		x1, [x0]
 		ret
 
