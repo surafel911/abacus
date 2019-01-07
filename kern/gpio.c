@@ -57,11 +57,11 @@ gpio_output_set_pin(const enum gpio_pin pins, const bool to)
 }
 
 void
-gpio_pud_set_state(const enum gpio_pud pud, const enum gpio_pin pins)
+gpio_pud_set_pins(const enum gpio_pud pud, const enum gpio_pin pins)
 {
 	volatile int count;
 
-	_gpio->pud = (uint32_t)pud;
+	_gpio->pud = pud;
 	for (count = 0; count < 150; count++);
 	_gpio->pudclk[0] = pins;
 	_gpio->pudclk[1] = pins >> 32;

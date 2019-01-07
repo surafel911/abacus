@@ -142,6 +142,6 @@ void
 gpio_output_set_pin(const enum gpio_pin pin, const bool to);
 
 void
-gpio_pud_set_state(const enum gpio_pud pud, const enum gpio_pin pins);
+gpio_pud_set_pins(const enum gpio_pud pud, const enum gpio_pin pins);
 
 #endif // ABACUS_GPIO_H
